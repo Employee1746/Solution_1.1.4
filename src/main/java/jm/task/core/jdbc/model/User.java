@@ -19,7 +19,15 @@ public class User {
     private Byte age;
 
     public User() {
+    }
 
+    @Override
+    public String toString() {
+        return "User {" +
+                "name = '" + name + '\'' +
+                ", lastName = '" + lastName + '\'' +
+                ", age = " + age +
+                '}';
     }
 
     public User(String name, String lastName, Byte age) {
