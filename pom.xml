@@ -21,7 +21,7 @@
     </build>
 
     <dependencies>
-        <!--         Ваши зависимости-->
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
