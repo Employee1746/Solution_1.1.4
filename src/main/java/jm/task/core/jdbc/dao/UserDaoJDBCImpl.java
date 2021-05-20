@@ -8,10 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
-    static String createTable = "CREATE TABLE IF NOT EXISTS users (Id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(20), lastName VARCHAR(20), age INT)";
-    static String dropTable = "DROP TABLE IF EXISTS users";
-    static String deleteById = "DELETE FROM users WHERE Id = ";
-    static String clearAllUsers = "TRUNCATE users;";
+    private final static String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS users " +
+            "(Id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(20), lastName VARCHAR(20), age INT)";
+    private final static String DROP_TABLE = "DROP TABLE IF EXISTS users";
+    private final static String DELETE_BY_ID = "DELETE FROM users WHERE Id = ";
+    private final static String CLEAR_ALL_USERS = "TRUNCATE users;";
+    private final static String INSERT_USER = "INSERT INTO users(name, lastName, age) VALUES (?, ?, ?)";
+    private final static String GET_ALL_USERS = "SELECT * FROM users";
 
     public UserDaoJDBCImpl() {
     }
@@ -19,7 +22,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public void createUsersTable() {
         try (Connection connection = Util.getMySQLConnection()) {
             Statement statement = connection.createStatement();
-            statement.executeUpdate(createTable);
+            statement.executeUpdate(CREATE_TABLE);
             System.out.println("Table has been created!");
         } catch (SQLException e) {
             System.out.println("Table creating error");
@@ -29,7 +32,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public void dropUsersTable() {
         try (Connection connection = Util.getMySQLConnection()) {
             Statement statement = connection.createStatement();
-            statement.executeUpdate(dropTable);
+            statement.executeUpdate(DROP_TABLE);
             System.out.println("Table has been deleted!");
         } catch (SQLException e) {
             System.out.println("Table deleting error");
@@ -38,8 +41,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void saveUser(String name, String lastName, byte age) {
         try (Connection connection = Util.getMySQLConnection()) {
-            String insert = "INSERT INTO users(name, lastName, age) VALUES (?, ?, ?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(insert);
+            PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USER);
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
             preparedStatement.setString(3, String.valueOf(age));
@@ -53,7 +55,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public void removeUserById(long id) {
         try (Connection connection = Util.getMySQLConnection()) {
             Statement statement = connection.createStatement();
-            statement.executeUpdate(deleteById + id);
+            statement.executeUpdate(DELETE_BY_ID + id);
             System.out.println("User with id = " + id + " has been removed");
         } catch (SQLException e) {
             System.out.println("User removing error");
@@ -64,7 +66,7 @@ public class UserDaoJDBCImpl implements UserDao {
         List<User> list = new ArrayList<>();
         try (Connection connection = Util.getMySQLConnection()) {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM users");
+            ResultSet resultSet = statement.executeQuery(GET_ALL_USERS);
             while (resultSet.next()) {
                 String name = resultSet.getString(2);
                 String lastName = resultSet.getString(3);
@@ -80,7 +82,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public void cleanUsersTable() {
         try (Connection connection = Util.getMySQLConnection()) {
             Statement statement = connection.createStatement();
-            statement.executeUpdate(clearAllUsers);
+            statement.executeUpdate(CLEAR_ALL_USERS);
             System.out.println("Users has been cleaned");
         } catch (SQLException e) {
             System.out.println("Table cleaning error");
