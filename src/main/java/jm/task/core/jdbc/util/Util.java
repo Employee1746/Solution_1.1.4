@@ -28,8 +28,6 @@ public class Util {
     private static SessionFactory sessionFactory;
 
     public static SessionFactory getSessionFactory() {
-        //WARN: HHH10001002: Using Hibernate built-in connection pool (not for production use!)
-        //Это связано с тем, что мы на каждую операцию используем новый sessionFactory?
         if (sessionFactory == null) {
             try {
                 Configuration configuration = new Configuration();
@@ -39,9 +37,10 @@ public class Util {
                 settings.put(Environment.PASS, PASSWORD);
                 settings.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
                 settings.put(Environment.SHOW_SQL, "true");
-                configuration.setProperties(settings);  //Передачу экземпляра java.util.Properties в Configuration.setProperties().
+                configuration.setProperties(settings);
                 configuration.addAnnotatedClass(User.class);
-                ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+                ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().
+                        applySettings(configuration.getProperties()).build();
                 sessionFactory = configuration.buildSessionFactory(serviceRegistry);
             } catch (Exception e) {
                 System.out.println("Ошибка получения сессии");
