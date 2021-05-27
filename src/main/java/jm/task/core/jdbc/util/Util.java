@@ -1,11 +1,7 @@
 package jm.task.core.jdbc.util;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Properties;
 
-import jm.task.core.jdbc.dao.UserDaoHibernateImpl;
 import jm.task.core.jdbc.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -17,19 +13,13 @@ public class Util {
     private final static String URL = "jdbc:mysql://localhost:3306/users";
     private final static String USERNAME = "root";
     private final static String PASSWORD = "g23LHmVqZYZ8";
+    private static SessionFactory sessionFactory;
 
-                /*-----часть относящаяся к 1.1.3----
-    public static Connection getMySQLConnection() throws SQLException {
-        return getMySQLConnection(URL, USERNAME, PASSWORD);
+    private Util() {
     }
-
-    public static Connection getMySQLConnection(String url, String userName, String password) throws SQLException {
-        return DriverManager.getConnection(url, userName, password);
-    }
-*/
 
     public static SessionFactory getSessionFactory() {
-        if (UserDaoHibernateImpl.sessionFactory == null) {
+        if (sessionFactory == null) {
             try {
                 Configuration configuration = new Configuration();
                 Properties settings = new Properties();
@@ -42,12 +32,12 @@ public class Util {
                 configuration.addAnnotatedClass(User.class);
                 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().
                         applySettings(configuration.getProperties()).build();
-                UserDaoHibernateImpl.sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+                sessionFactory = configuration.buildSessionFactory(serviceRegistry);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return UserDaoHibernateImpl.sessionFactory;
+        return sessionFactory;
     }
 }
 
