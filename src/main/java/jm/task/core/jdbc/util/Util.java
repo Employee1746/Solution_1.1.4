@@ -10,32 +10,45 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.service.ServiceRegistry;
 
 public class Util {
-    private final static String URL = "jdbc:mysql://localhost:3306/users";
-    private final static String USERNAME = "root";
-    private final static String PASSWORD = "g23LHmVqZYZ8";
-
-    private static Util instance = null;
     private static SessionFactory sessionFactory;
 
     private Util() {
     }
 
     public static SessionFactory getSessionFactory() {
-        if (instance == null) {
-            instance = new Util();
-            Configuration configuration = new Configuration();
-            Properties settings = new Properties();
-            settings.put(Environment.URL, URL);
-            settings.put(Environment.USER, USERNAME);
-            settings.put(Environment.PASS, PASSWORD);
-            settings.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
-            settings.put(Environment.SHOW_SQL, "true");
-            configuration.setProperties(settings);
-            configuration.addAnnotatedClass(User.class);
-            ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().
-                    applySettings(configuration.getProperties()).build();
-            sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+        if (sessionFactory == null) {
+            try {
+                Configuration configuration = new Configuration();
+                Properties settings = new Properties();
+                settings.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
+                settings.put(Environment.URL, "jdbc:mysql://localhost:3306/users");
+                settings.put(Environment.USER, "root");
+                settings.put(Environment.PASS, "g23LHmVqZYZ8");
+                settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
+                settings.put(Environment.HBM2DDL_AUTO, "create-drop");
+                configuration.setProperties(settings);
+                configuration.addAnnotatedClass(User.class);
+                ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+                        .applySettings(configuration.getProperties()).build();
+                sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return sessionFactory;
     }
 }
+//Lazy Initialization
+//
+//public class Singleton {
+//  private static Singleton INSTANCE;
+//
+//  private Singleton() {}
+//
+//  public static Singleton getInstance() {
+//    if (INSTANCE == null) {
+//      INSTANCE = new Singleton();
+//    }
+//    return INSTANCE;
+//  }
+//}
